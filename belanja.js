@@ -1,0 +1,38 @@
+const { response, request } = require("express")
+const express = require("express")
+const app = express()
+
+// set to read a request data from JSON format
+app.use(express.json())
+// JSON is string
+
+app.post("/belanja", (request, response) => {
+    let barang = request.body.barang
+    let hasil = []
+
+    for (let i = 0; i < barang.length; i++) {
+        if (barang[i].qty >= barang[i].min_discount) {
+            let hargaAkhir = (barang[i].price * barang[i].qty) - (barang[i].price * barang[i].qty * barang[i].discount)
+            hasil.push({
+                "barang" : barang[i].name,
+                "total" : hargaAkhir,
+                "total.item" : barang[i].qty
+            })
+        } else if (barang[i].qty < barang[i].min_discount) {
+            let hargaAkhir = barang[i].price * barang[i].qty
+            hasil.push({
+                "barang" : barang[i].name,
+                "total" : hargaAkhir,
+                "total.item" : barang[i].qty
+            })
+        }
+    }
+
+    return response.json({
+        Belanja : hasil
+    })
+})
+
+app.listen(8000, () => {
+    console.log(`Server run on port 8000`);
+})
